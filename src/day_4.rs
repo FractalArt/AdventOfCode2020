@@ -56,7 +56,7 @@ pub struct Passport<'a> {
     /// The eye color of the passport holder.
     pub ecl: &'a str,
     /// The passport identification number.
-    pub pid: u32,
+    pub pid: &'a str, // we use a string because of the leading zeros
     /// The country id.
     pub cid: Option<i64>,
 }
@@ -163,7 +163,7 @@ fn passport_has_valid_fields(raw_data: &str, required_fields: &Vec<&str>) -> boo
 }
 
 /// Extract the year `key` from the `passport_data`.
-/// 
+///
 /// If the value cannot be correctly parsed from the string or if it does not satisfy
 /// min <= year <= max, `None` is returned.
 fn get_year(passport_data: &HashMap<&str, &str>, key: &str, min: u32, max: u32) -> Option<u32> {
@@ -218,14 +218,13 @@ fn get_ecl<'a>(passport_data: &HashMap<&'a str, &'a str>) -> Option<&'a str> {
 }
 
 /// Get the passport id..
-fn get_pid(passport_data: &HashMap<&str, &str>) -> Option<u32> {
+fn get_pid<'a>(passport_data: &HashMap<&'a str, &'a str>) -> Option<&'a str> {
     lazy_static::lazy_static! {
-        static ref RE_PID: regex::Regex = regex::Regex::new(r"(\d{9})$").unwrap();
+        static ref RE_PID: regex::Regex = regex::Regex::new(r"^(\d{9})$").unwrap();
     }
 
     match passport_data.get("pid") {
-        // Ok to call unwrap here, since we know from the regex that it is a valid integer.
-        Some(&val) if RE_PID.is_match(val) => Some(val.parse::<u32>().unwrap()),
+        Some(&val) if RE_PID.is_match(val) => Some(val),
         _ => None,
     }
 }
@@ -461,13 +460,13 @@ mod tests {
         let valid_2 = vec![("pid", "087499704"), ("cid", "993483")]
             .into_iter()
             .collect();
-        let invalid_1 = vec![("ecl", "0123456789"), ("cid", "993483")]
+        let invalid_1 = vec![("pid", "0123456789"), ("cid", "993483")]
             .into_iter()
             .collect();
         let invalid_2 = vec![("cid", "993483")].into_iter().collect();
 
-        assert_eq!(get_pid(&valid_1), Some(000000001));
-        assert_eq!(get_pid(&valid_2), Some(087499704));
+        assert_eq!(get_pid(&valid_1), Some("000000001"));
+        assert_eq!(get_pid(&valid_2), Some("087499704"));
         assert_eq!(get_pid(&invalid_1), None);
         assert_eq!(get_pid(&invalid_2), None);
     }
@@ -491,7 +490,7 @@ mod tests {
         assert_eq!(get_hgt(&fields).unwrap(), Height::Inch(74));
         assert_eq!(get_hcl(&fields).unwrap(), "#623a2f");
         assert_eq!(get_ecl(&fields).unwrap(), "grn");
-        assert_eq!(get_pid(&fields).unwrap(), 087499704);
+        assert_eq!(get_pid(&fields).unwrap(), "087499704");
 
         let passport = passport_is_valid(&fields);
         assert_eq!(
@@ -503,10 +502,35 @@ mod tests {
                 hgt: Height::Inch(74),
                 hcl: "#623a2f",
                 ecl: "grn",
-                pid: 087499704,
+                pid: "087499704",
                 cid: None
             })
         );
+    }
+
+    #[test]
+    fn test_invalid_passport() {
+        let valid_input = "hgt:97 byr:1990 iyr:2019 ecl:grn pid:587580330 hcl:#341e13 eyr:2022 ";
+        let fields = get_passport_fields(valid_input);
+        assert!(fields.contains_key("byr"));
+        assert!(fields.contains_key("iyr"));
+        assert!(fields.contains_key("eyr"));
+        assert!(fields.contains_key("hgt"));
+        assert!(fields.contains_key("hcl"));
+        assert!(fields.contains_key("ecl"));
+        assert!(fields.contains_key("pid"));
+        assert!(!fields.contains_key("cid"));
+
+        assert_eq!(get_year(&fields, "byr", 1920, 2002).unwrap(), 1990);
+        assert_eq!(get_year(&fields, "iyr", 2010, 2020).unwrap(), 2019);
+        assert_eq!(get_year(&fields, "eyr", 2020, 2030).unwrap(), 2022);
+        assert_eq!(get_hgt(&fields), None);
+        assert_eq!(get_hcl(&fields).unwrap(), "#341e13");
+        assert_eq!(get_ecl(&fields).unwrap(), "grn");
+        assert_eq!(get_pid(&fields).unwrap(), "587580330");
+
+        let passport = passport_is_valid(&fields);
+        assert_eq!(passport, None);
     }
 
     #[test]
