@@ -13,7 +13,7 @@
 /// by taking `slope_y` steps down.
 ///
 /// The number of trees encountered during the descent is returned.
-pub fn task_1(data: &Vec<String>, slope_x: usize, slope_y: usize) -> u64 {
+pub fn task_1(data: &[String], slope_x: usize, slope_y: usize) -> u64 {
     let mut current_x: usize = 0;
     let mut current_y: usize = 0;
     let mut counter: u64 = 0;
@@ -41,9 +41,9 @@ pub fn task_1(data: &Vec<String>, slope_x: usize, slope_y: usize) -> u64 {
 /// or equivalently one height level in the terrain.
 ///
 /// The solution delegates the work to the function [`task_1`](`crate::day_3::task_1`).
-pub fn task_2(data: &Vec<String>, slopes: &Vec<(usize, usize)>) -> u64 {
+pub fn task_2(data: &[String], slopes: &[(usize, usize)]) -> u64 {
     slopes
-        .into_iter()
+        .iter()
         .map(|(x, y)| task_1(data, *x, *y))
         .product::<u64>()
 }
@@ -53,7 +53,7 @@ mod tests {
     use super::*;
     #[test]
     fn test_day_3_task_1() {
-        let terrain = vec![
+        let terrain = &[
             "..##.......".to_string(),
             "#...#...#..".to_string(),
             ".#....#..#.".to_string(),
@@ -66,12 +66,12 @@ mod tests {
             "#...##....#".to_string(),
             ".#..#...#.#".to_string(),
         ];
-        assert_eq!(task_1(&terrain, 3, 1), 7);
+        assert_eq!(task_1(terrain, 3, 1), 7);
     }
 
     #[test]
     fn test_day_3_task_2() {
-        let terrain = vec![
+        let terrain = &[
             "..##.......".to_string(),
             "#...#...#..".to_string(),
             ".#....#..#.".to_string(),
@@ -84,7 +84,7 @@ mod tests {
             "#...##....#".to_string(),
             ".#..#...#.#".to_string(),
         ];
-        let slopes = vec![(1, 1), (3, 1), (5, 1), (7, 1), (1, 2)];
-        assert_eq!(task_2(&terrain, &slopes), 336);
+        let slopes = &[(1, 1), (3, 1), (5, 1), (7, 1), (1, 2)];
+        assert_eq!(task_2(terrain, slopes), 336);
     }
 }

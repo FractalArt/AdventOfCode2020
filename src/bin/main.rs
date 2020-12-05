@@ -36,7 +36,7 @@ fn main() {
         assert_eq!(day_3_task_1, 156);
 
         let day_3_task_2 =
-            aoc2020::day_3::task_2(&data_day_3, &vec![(1, 1), (3, 1), (5, 1), (7, 1), (1, 2)]);
+            aoc2020::day_3::task_2(&data_day_3, &[(1, 1), (3, 1), (5, 1), (7, 1), (1, 2)]);
         println!("AOC 2020, day 3, task 2: {}", day_3_task_2);
         assert_eq!(day_3_task_2, 3521829480);
     } else {
@@ -55,5 +55,14 @@ fn main() {
             assert_eq!(day_4_task_2, 140);
         }
         Err(_) => eprintln!("AOC 2020, day 4: Unable to read data for day 4. Skipping"),
+    }
+
+    // Day 5
+    if let Ok(data_day_5) = read_data::<String, _>("data/day5.txt") {
+        let day_5_task_1 = aoc2020::day_5::task_1(&data_day_5);
+        println!("\nAOC 2020, day 5, task 1: {}", day_5_task_1);
+    // assert_eq!(day_3_task_1, 156);
+    } else {
+        eprintln!("AOC 2020, day 5: Unable to read data for day 5. Skipping.");
     }
 }

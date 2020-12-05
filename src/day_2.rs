@@ -71,15 +71,16 @@ fn process_input_day_2(input: &str) -> (String, char, usize, usize) {
 ///
 /// ```
 /// # use aoc2020::day_2::task_1;
-/// assert_eq!(task_1(&vec![
+/// assert_eq!(task_1(&[
 ///     "1-3 a: abcde".to_string(),
 ///     "1-3 b: cdefg".to_string(),
 /// ]), 1);
 /// ```
-pub fn task_1(data: &Vec<String>) -> usize {
+pub fn task_1(data: &[String]) -> usize {
     data.iter()
-        .map(|s| match process_input_day_2(&s) {
-            (pwd, c, min, max) => is_valid_password_1(&pwd, c, min, max),
+        .map(|s| {
+            let (pwd, c, min, max) = process_input_day_2(&s);
+            is_valid_password_1(&pwd, c, min, max)
         })
         .filter(|b| *b)
         .count()
@@ -95,15 +96,16 @@ pub fn task_1(data: &Vec<String>) -> usize {
 ///
 /// ```
 /// # use aoc2020::day_2::task_2;
-/// assert_eq!(task_2(&vec![
+/// assert_eq!(task_2(&[
 ///     "1-3 a: abcde".to_string(),
 ///     "1-3 b: bdbfg".to_string(),
 /// ]), 1);
 /// ```
-pub fn task_2(data: &Vec<String>) -> usize {
+pub fn task_2(data: &[String]) -> usize {
     data.iter()
-        .map(|s| match process_input_day_2(&s) {
-            (pwd, c, pos_1, pos_2) => is_valid_password_2(&pwd, c, pos_1, pos_2),
+        .map(|s| {
+            let (pwd, c, pos_1, pos_2) = process_input_day_2(&s);
+            is_valid_password_2(&pwd, c, pos_1, pos_2)
         })
         .filter(|b| *b)
         .count()
@@ -116,7 +118,7 @@ mod tests {
     #[test]
     fn test_day_2_task_1() {
         assert_eq!(
-            task_1(&vec![
+            task_1(&[
                 "1-3 a: abcde".to_string(),
                 "1-3 b: cdefg".to_string(),
                 "2-9 c: ccccccccc".to_string()

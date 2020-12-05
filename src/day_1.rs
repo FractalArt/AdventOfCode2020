@@ -12,11 +12,10 @@ use itertools::Itertools;
 /// is equal to `sum_target` and return their product.
 ///
 /// The input values are stored in the vector `data`.
-pub fn day_1(data: &Vec<u32>, elements_to_sum: usize, sum_target: u32) -> u32 {
+pub fn day_1(data: &[u32], elements_to_sum: usize, sum_target: u32) -> u32 {
     data.iter()
-        .to_owned()
         .combinations(elements_to_sum)
-        .filter(|v| v.into_iter().fold(0u32, |a, &&b| a + b) == sum_target)
+        .filter(|v| v.iter().copied().sum::<u32>() == sum_target)
         .map(|v| v.into_iter().product::<u32>())
         .sum()
 }
@@ -27,9 +26,6 @@ mod tests {
 
     #[test]
     fn test_day_1() {
-        assert_eq!(
-            514579,
-            day_1(&vec![1721, 979, 366, 299, 675, 1456], 2, 2020)
-        );
+        assert_eq!(514579, day_1(&[1721, 979, 366, 299, 675, 1456], 2, 2020));
     }
 }

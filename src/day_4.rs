@@ -11,7 +11,7 @@ use std::collections::HashMap;
 /// the data of all passports, where the batches are separated by
 /// blank lines.
 pub fn task_1(data: &str) -> usize {
-    let required_fields = vec!["byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"];
+    let required_fields = ["byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"];
     data.split("\n\n")
         .map(|p| passport_has_valid_fields(p, &required_fields))
         .filter(|b| *b)
@@ -76,7 +76,7 @@ fn get_passport_fields(passport_batch: &str) -> HashMap<&str, &str> {
     passport_batch
         .split_ascii_whitespace()
         .map(|s| {
-            let split: Vec<_> = s.split(":").collect();
+            let split: Vec<_> = s.split(':').collect();
             assert_eq!(split.len(), 2);
             (split[0], split[1])
         })
@@ -152,7 +152,7 @@ fn passport_is_valid<'a>(field_data: &HashMap<&'a str, &'a str>) -> Option<Passp
 ///
 /// The second argument `required_fields` contains a list of entries that are
 /// required on the passport for it to be considered valid.
-fn passport_has_valid_fields(raw_data: &str, required_fields: &Vec<&str>) -> bool {
+fn passport_has_valid_fields(raw_data: &str, required_fields: &[&str]) -> bool {
     let data = get_passport_fields(raw_data);
     for elem in required_fields {
         if !data.contains_key(elem) {
@@ -264,7 +264,7 @@ mod tests {
         let invalid_input = "iyr:2013 ecl:amb cid:350 eyr:2023 pid:028048884
         hcl:#cfa07d byr:1929";
 
-        let required_fields = vec!["byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid", "cid"];
+        let required_fields = ["byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid", "cid"];
 
         assert_eq!(
             passport_has_valid_fields(valid_input, &required_fields),
