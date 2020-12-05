@@ -61,7 +61,11 @@ fn main() {
     if let Ok(data_day_5) = read_data::<String, _>("data/day5.txt") {
         let day_5_task_1 = aoc2020::day_5::task_1(&data_day_5);
         println!("\nAOC 2020, day 5, task 1: {}", day_5_task_1);
-    // assert_eq!(day_3_task_1, 156);
+        assert_eq!(day_5_task_1, 935);
+
+        let day_5_task_2 = aoc2020::day_5::task_2(&data_day_5);
+        println!("AOC 2020, day 5, task 2: {}", day_5_task_2);
+        assert_eq!(day_5_task_2, 743);
     } else {
         eprintln!("AOC 2020, day 5: Unable to read data for day 5. Skipping.");
     }
