@@ -69,4 +69,18 @@ fn main() {
     } else {
         eprintln!("AOC 2020, day 5: Unable to read data for day 5. Skipping.");
     }
+
+    // Day 6
+    match std::fs::read_to_string("data/day6.txt") {
+        Ok(content) => {
+            let day_6_task_1 = aoc2020::day_6::task_1(&content);
+            println!("\nAOC 2020, day 6, task 1: {}", day_6_task_1);
+            assert_eq!(day_6_task_1, 6542);
+
+            let day_6_task_2 = aoc2020::day_6::task_2(&content);
+            println!("AOC 2020, day 6, task 2: {}", day_6_task_2);
+            assert_eq!(day_6_task_2, 3299);
+        }
+        Err(_) => eprintln!("AOC 2020, day 6: Unable to read data for day 6. Skipping"),
+    }
 }
