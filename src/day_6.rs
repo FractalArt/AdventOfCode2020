@@ -31,7 +31,10 @@ fn count_questions_yes_answers(s: &str) -> usize {
 
 /// Compute the number of questions answered with yes by __all__ people in a group.
 fn count_questions_all_yes_answers(input: &str) -> usize {
-    let members = input.split_whitespace().map(|s|s.chars().collect::<Vec<_>>()).collect::<Vec<_>>();
+    let members = input
+        .split_whitespace()
+        .map(|s| s.chars().collect::<Vec<_>>())
+        .collect::<Vec<_>>();
     members[0]
         .iter()
         .filter(|c| members.iter().all(|m| m.contains(c)))
