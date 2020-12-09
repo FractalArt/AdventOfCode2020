@@ -13,6 +13,7 @@ pub mod day_4;
 pub mod day_5;
 pub mod day_6;
 pub mod day_7;
+pub mod day_8;
 
 use std::fs::File;
 use std::io::{self, prelude::*, BufReader};
