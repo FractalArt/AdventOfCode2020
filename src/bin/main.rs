@@ -92,7 +92,7 @@ fn main() {
 
         let day_7_task_2 = aoc2020::day_7::task_2(&data_day_7);
         println!("AOC 2020, day 7, task 2: {}", day_7_task_2);
-        // assert_eq!(day_7_task_2, 3335);
+    // assert_eq!(day_7_task_2, 3335);
     } else {
         eprintln!("AOC 2020, day 7: Unable to read data for day 7. Skipping.");
     }
@@ -103,9 +103,9 @@ fn main() {
         println!("\nAOC 2020, day 8, task 1: {}", day_8_task_1);
         assert_eq!(day_8_task_1, 2080);
 
-    // let day_8_task_2 = aoc2020::day_8::task_2(&data_day_8);
-    // println!("AOC 2020, day 8, task 2: {}", day_8_task_2);
-    // assert_eq!(day_8_task_2, 3335);
+        let day_8_task_2 = aoc2020::day_8::task_2(&data_day_8);
+        println!("AOC 2020, day 8, task 2: {}", day_8_task_2);
+        assert_eq!(day_8_task_2, 2477);
     } else {
         eprintln!("AOC 2020, day 8: Unable to read data for day 8. Skipping.");
     }

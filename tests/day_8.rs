@@ -6,4 +6,7 @@ fn test_day_8() {
 
     let task_1 = aoc2020::day_8::task_1(&data);
     assert_eq!(task_1, 2080);
+
+    let task_2 = aoc2020::day_8::task_2(&data);
+    assert_eq!(task_2, 2477);
 }
