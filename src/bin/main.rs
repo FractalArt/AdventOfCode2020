@@ -92,7 +92,7 @@ fn main() {
 
         let day_7_task_2 = aoc2020::day_7::task_2(&data_day_7);
         println!("AOC 2020, day 7, task 2: {}", day_7_task_2);
-    // assert_eq!(day_7_task_2, 3335);
+        assert_eq!(day_7_task_2, 3765);
     } else {
         eprintln!("AOC 2020, day 7: Unable to read data for day 7. Skipping.");
     }

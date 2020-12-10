@@ -28,40 +28,34 @@ pub fn task_1(data: &[String]) -> usize {
 }
 
 /// Compute the number of bags contained in a bag of color `shiny gold`.
+///
+/// -1 because `count_contained_bags` also counts the containing bag, which is what we want
+/// to have, except for the top-level gold bag which we do not want to count, since we are only
+/// interested in its contents.
 pub fn task_2(data: &[String]) -> u32 {
-    // Extract the rules from the input
     let content_rules: BagContentMap = data.iter().map(|l| extract_color_contents(l)).collect();
-    count_contained_bags("shiny gold", &content_rules)
+    count_contained_bags("shiny gold", &content_rules) - 1
 }
 
 /// Compute the parents of each bag containing a shiny gold bag at some level.
 /// Notice that the bag under consideration is itself considered a possible
 /// top-level bag.
+///
+/// We loop over all keys in the bag counter map, filter those that contain
+/// `bag` and for each of these add them to the possible parent list, together
+/// with their parents.
 fn get_parents<'a>(bag: &'a str, bcm: &BagContentMap<'a>) -> BagSet<'a> {
-    let mut parent_set: BagSet = vec![bag].into_iter().collect();
-    for candidate in bcm.keys() {
-        if bcm[candidate].contains_key(&bag) {
-            for parent in get_parents(candidate, &bcm) {
-                parent_set.insert(&parent);
-            }
-        }
-    }
-    parent_set
-
-    // The pure iterator solution is here below, by I think the
-    // procedural code above looks a lot cleaner here.
-
-    // bcm.keys().filter(|&key| bcm[key].contains_key(&bag)).fold(
-    //     vec![bag].into_iter().collect::<HashSet<_>>(),
-    //     |parents, key| {
-    //         get_parents(key, &bcm)
-    //             .into_iter()
-    //             .fold(parents, |mut acc, p| {
-    //                 acc.insert(p);
-    //                 acc
-    //             })
-    //     },
-    // )
+    bcm.keys().filter(|&key| bcm[key].contains_key(&bag)).fold(
+        vec![bag].into_iter().collect::<HashSet<_>>(),
+        |parents, key| {
+            get_parents(key, &bcm)
+                .into_iter()
+                .fold(parents, |mut acc, p| {
+                    acc.insert(p);
+                    acc
+                })
+        },
+    )
 }
 
 /// Extract the color of a parent bag and the number and color of its content bags.
@@ -96,25 +90,12 @@ fn extract_color_contents<'a>(rule: &'a str) -> (&str, BagCounts<'a>) {
 
 /// Count the number of bags contained in `bag`.
 fn count_contained_bags<'a>(bag: &'a str, content_map: &BagContentMap<'a>) -> u32 {
-    match content_map[bag]
+    // 3766: Too high, 3335, too low
+    content_map[bag]
         .iter()
-        .map(|x| x)
-        .map(|(key, &count)| {
-            let bags = count_contained_bags(key, &content_map);
-            // If the bag has no content, we just count its number of occurrences
-            if bags == 1 {
-                count
-            // If the bag has content, we count itself as well as its content
-            } else {
-                count * (1 + bags)
-            }
-        })
-        .sum()
-    {
-        // If this bag has no contained bags, we just count the bag itself
-        0 => 1,
-        val => val,
-    }
+        .map(|(key, &count)| count * count_contained_bags(key, &content_map))
+        .sum::<u32>()
+        + 1 // + 1 because we also count the containing bag
 }
 
 #[cfg(test)]
@@ -191,8 +172,10 @@ mod tests {
         let content_rules_2: BagContentMap =
             input_2.iter().map(|l| extract_color_contents(l)).collect();
 
-        assert_eq!(count_contained_bags("dark blue", &content_rules_1), 2);
-        assert_eq!(count_contained_bags("shiny gold", &content_rules_1), 126);
-        assert_eq!(count_contained_bags("shiny gold", &content_rules_2), 32);
+        // We add one, with respect to the test data presented in the exercise
+        // since we also count the containing bag.
+        assert_eq!(count_contained_bags("dark blue", &content_rules_1), 3);
+        assert_eq!(count_contained_bags("shiny gold", &content_rules_1), 127);
+        assert_eq!(count_contained_bags("shiny gold", &content_rules_2), 33);
     }
 }

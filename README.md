@@ -22,7 +22,7 @@ Attempting the [AOC 2020](https://adventofcode.com/2020/) problems as an excuse 
 | Day 6, Part 1 | :heavy_check_mark: |
 | Day 6, Part 2 | :heavy_check_mark: |
 | Day 7, Part 1 | :heavy_check_mark: |
-| Day 7, Part 2 | :x: |
+| Day 7, Part 2 | :heavy_check_mark: |
 | Day 8, Part 1 | :heavy_check_mark: |
 | Day 8, Part 2 | :heavy_check_mark: |
 | Day 9, Part 1 | :heavy_check_mark: |
