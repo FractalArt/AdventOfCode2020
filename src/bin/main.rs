@@ -109,4 +109,17 @@ fn main() {
     } else {
         eprintln!("AOC 2020, day 8: Unable to read data for day 8. Skipping.");
     }
+
+    // Day 9
+    if let Ok(data_day_9) = read_data::<u64, _>("data/day9.txt") {
+        let day_9_task_1 = aoc2020::day_9::task_1(&data_day_9, 25);
+        println!("\nAOC 2020, day 9, task 1: {}", day_9_task_1);
+        assert_eq!(day_9_task_1, 257342611);
+
+    // let day_8_task_2 = aoc2020::day_8::task_2(&data_day_8);
+    // println!("AOC 2020, day 8, task 2: {}", day_8_task_2);
+    // assert_eq!(day_8_task_2, 2477);
+    } else {
+        eprintln!("AOC 2020, day 8: Unable to read data for day 8. Skipping.");
+    }
 }
