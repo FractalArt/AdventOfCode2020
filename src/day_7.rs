@@ -90,7 +90,6 @@ fn extract_color_contents<'a>(rule: &'a str) -> (&str, BagCounts<'a>) {
 
 /// Count the number of bags contained in `bag`.
 fn count_contained_bags<'a>(bag: &'a str, content_map: &BagContentMap<'a>) -> u32 {
-    // 3766: Too high, 3335, too low
     content_map[bag]
         .iter()
         .map(|(key, &count)| count * count_contained_bags(key, &content_map))
