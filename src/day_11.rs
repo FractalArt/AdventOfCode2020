@@ -6,13 +6,33 @@
 use itertools::Itertools;
 use std::cmp::{max, min};
 
+static DIRECTIONS: &[(isize, isize)] = &[
+    (-1, -1),
+    (-1, 0),
+    (0, -1),
+    (1, 0),
+    (0, 1),
+    (1, 1),
+    (1, -1),
+    (-1, 1),
+];
+
 /// Count the number of occupied seats after the equilibrium state has been
 /// reached and the statuses of all seats remain constant, i.e. no people move
-/// around.
-pub fn task_1(data: &str) -> usize {
+/// around. One can specify the strategy to use for defining which seats shall
+/// be considered in the updating process and what the threshold for surrounding
+/// occupied seats is.
+pub fn task_1_2(data: &str, strategy: &Strategy, threshold: u32) -> usize {
     let mut room: Room = data.into();
-    while room.update() {}
+    while room.update(strategy, threshold) {}
     room.occupied()
+}
+
+/// Choose whether to consider adjacent occupied seats or visible occupied seats.
+#[derive(Debug)]
+pub enum Strategy {
+    Adjacent,
+    Visible,
 }
 
 /// The different states a spot can have.
@@ -26,7 +46,7 @@ enum Spot {
 /// A `Room` is characterized by the state of all its spots and their
 /// dimensions.
 #[derive(Debug)]
-pub struct Room {
+struct Room {
     spots: Vec<Vec<Spot>>,
     rows: usize,
     cols: usize,
@@ -34,8 +54,8 @@ pub struct Room {
 
 // Construct a `Room` from a `&str`.
 impl From<&str> for Room {
-    fn from(raw: &str) -> Self {
-        let v = raw
+    fn from(string: &str) -> Self {
+        let v = string
             .split_whitespace()
             .map(|l| {
                 l.chars()
@@ -47,6 +67,7 @@ impl From<&str> for Room {
                     .collect::<Vec<_>>()
             })
             .collect::<Vec<_>>();
+
         Self {
             rows: v.len(),
             cols: v[0].len(),
@@ -57,7 +78,7 @@ impl From<&str> for Room {
 
 impl Room {
     /// Count how many seats, adjacent to the one located at `coords` are occupied.
-    pub fn adjacent_occupied(&self, coord: (usize, usize)) -> u32 {
+    fn adjacent_occupied(&self, coord: (usize, usize)) -> u32 {
         let mut sum = 0;
 
         for row in max(0, coord.0 as isize - 1) as usize..min(self.rows, coord.0 + 2) {
@@ -74,8 +95,46 @@ impl Room {
         sum
     }
 
+    /// Find an occupied seat in the direction `dir` starting from seat located at `coord`.
+    /// We use that the directions are either diagonal, horizontal or vertical to only
+    /// use one loop variable `i` in order to describe two components. Using two variables would
+    /// lead to an infinite loop when e.g. dir.1 = 0. Example:
+    ///      (row, col) = (`coord.0` + `i`*`dir.0`, `coord.1` + `i`*`dir.1`).
+    /// If `dir.0` and `dir.1` are non-zero, we are on the diagonal, for `dir.0`=0, we move
+    /// horizontally and for `dir.1` zero, we move vertically.
+    fn find_occupied_in_direction(&self, coord: (usize, usize), dir: (isize, isize)) -> bool {
+        let row = coord.0 as isize;
+        let col = coord.1 as isize;
+        for i in 1.. {
+            if row + i * dir.0 <= -1
+                || row + i * dir.0 >= self.rows as isize
+                || col + i * dir.1 <= -1
+                || col + i * dir.1 >= self.cols as isize
+            {
+                return false;
+            }
+            match self.spots[(row + i * dir.0) as usize][(col + i * dir.1) as usize] {
+                Spot::OccupiedSeat => return true,
+                Spot::EmptySeat => return false,
+                Spot::Floor => continue,
+            }
+        }
+
+        false
+    }
+
+    /// Compute the number of visible occupied seats to the left, right, top, bottom,
+    /// and on the diagonals starting from the seat located at `coords`.
+    fn adjacent_visible(&self, coord: (usize, usize)) -> u32 {
+        DIRECTIONS
+            .iter()
+            .map(|&dir| self.find_occupied_in_direction(coord, dir))
+            .filter(|&f| f)
+            .count() as u32
+    }
+
     /// Update seat statuses and return the number of seats that have been changed
-    pub fn update(&mut self) -> bool {
+    fn update(&mut self, strategy: &Strategy, threshold: u32) -> bool {
         let mut changes = false;
 
         self.spots = self
@@ -86,9 +145,12 @@ impl Room {
                 r.iter()
                     .enumerate()
                     .map(|(ci, c)| {
-                        let occ = self.adjacent_occupied((ri, ci));
+                        let occ = match strategy {
+                            Strategy::Adjacent => self.adjacent_occupied((ri, ci)),
+                            Strategy::Visible => self.adjacent_visible((ri, ci)),
+                        };
                         match c {
-                            Spot::OccupiedSeat if occ >= 4 => {
+                            Spot::OccupiedSeat if occ >= threshold => {
                                 changes = true;
                                 Spot::EmptySeat
                             }
@@ -106,7 +168,7 @@ impl Room {
         changes
     }
 
-    /// Count how many seats ins the room are occupied
+    /// Count how many seats in the room are occupied
     fn occupied(&self) -> usize {
         self.spots
             .iter()
@@ -154,6 +216,8 @@ mod tests {
         assert_eq!(room.cols, 10);
         assert_eq!(room.adjacent_occupied((0, 0)), 1);
         assert_eq!(room.adjacent_occupied((1, 1)), 2);
+        assert_eq!(room.adjacent_visible((6, 4)), 0);
+        assert_eq!(room.adjacent_visible((0, 0)), 1);
     }
 
     #[test]
@@ -163,8 +227,27 @@ mod tests {
 
         let iteration_1 = "#.##.##.##\n#######.##\n#.#.#..#..\n####.##.##\n#.##.##.##\n#.#####.##\n..#.#.....\n##########\n#.######.#\n#.#####.##";
         assert_eq!(&room._to_string(), start);
-        room.update();
+        room.update(&Strategy::Adjacent, 4);
 
         assert_eq!(&room._to_string(), iteration_1);
+    }
+
+    #[test]
+    fn test_day_11_task_1() {
+        let start = "L.LL.LL.LL\nLLLLLLL.LL\nL.L.L..L..\nLLLL.LL.LL\nL.LL.LL.LL\nL.LLLLL.LL\n..L.L.....\nLLLLLLLLLL\nL.LLLLLL.L\nL.LLLLL.LL";
+        assert_eq!(task_1_2(&start, &Strategy::Adjacent, 4), 37);
+    }
+
+    #[test]
+    fn test_day_11_task_2() {
+        let start = "L.LL.LL.LL\nLLLLLLL.LL\nL.L.L..L..\nLLLL.LL.LL\nL.LL.LL.LL\nL.LLLLL.LL\n..L.L.....\nLLLLLLLLLL\nL.LLLLLL.L\nL.LLLLL.LL";
+        assert_eq!(task_1_2(&start, &Strategy::Visible, 5), 26);
+    }
+
+    #[test]
+    fn test_find_occupied_in_direction() {
+        let iteration_1 = "#.L#.L#.L#\n#LLLLLL.LL\nL.L.L..#..\n##L#.#L.L#\nL.L#.LL.L#\n#.LLLL#.LL\n..#.L.....\nLLL###LLL#\n#.LLLLL#.L\n#.L#LL#.L#";
+        let room: Room = iteration_1.into();
+        assert_eq!(room.find_occupied_in_direction((2, 4), (0, 1)), true);
     }
 }
