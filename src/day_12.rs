@@ -10,7 +10,8 @@ lazy_static::lazy_static! {
 }
 
 /// Compute the Manhattan distance of the ship after performing
-/// all the navigation actions provided in `data`.
+/// all the navigation actions provided in `data`. In this task
+/// the ship is rotated.
 pub fn task_1(data: &[String]) -> isize {
     let position = data
         .iter()
@@ -21,6 +22,21 @@ pub fn task_1(data: &[String]) -> isize {
         });
 
     position.north_south.abs() + position.east_west.abs()
+}
+
+/// Compute the Manhattan distance of the ship after performing
+/// all the navigation actions provided in `data`. In this task
+/// the waypoint is rotated.
+pub fn task_2(data: &[String]) -> isize {
+    let position =
+        data.iter()
+            .map(|l| extract_action(&l))
+            .fold(WayPoint::new(), |mut waypoint, action| {
+                waypoint.apply_action(action);
+                waypoint
+            });
+
+    position.ship_position.0.abs() + position.ship_position.1.abs()
 }
 
 /// Extract the action from its string representation in the input file.
@@ -118,6 +134,55 @@ impl Ship {
     }
 }
 
+/// A waypoint for Part 2.
+struct WayPoint {
+    ship_position: (isize, isize),
+    north_south: isize,
+    east_west: isize,
+}
+
+impl WayPoint {
+    /// Create a waypoint with the initial conditions as defined in the challenge.
+    fn new() -> Self {
+        Self {
+            ship_position: (0, 0),
+            north_south: 1,
+            east_west: 10,
+        }
+    }
+
+    /// Apply a given action to the waypoint.
+    fn apply_action(&mut self, action: Action) {
+        match action {
+            Action::N(val) => self.north_south += val,
+            Action::S(val) => self.north_south -= val,
+            Action::E(val) => self.east_west += val,
+            Action::W(val) => self.east_west -= val,
+            Action::F(val) => {
+                self.ship_position = (
+                    self.ship_position.0 + val * self.north_south,
+                    self.ship_position.1 + val * self.east_west,
+                )
+            }
+            Action::L(val) => self.rotate(-val % 360),
+            Action::R(val) => self.rotate(val % 360),
+        }
+    }
+
+    /// Rotate the waypoint.
+    fn rotate(&mut self, angle: isize) {
+        assert!(angle % 90 == 0);
+        for _ in 0..angle.abs() / 90 {
+            let (new_north_south, new_east_west) = (
+                -angle.signum() * self.east_west,
+                angle.signum() * self.north_south,
+            );
+            self.north_south = new_north_south;
+            self.east_west = new_east_west;
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -155,6 +220,77 @@ mod tests {
     }
 
     #[test]
+    fn test_rotate_waypoint() {
+        let mut wp = WayPoint::new();
+        assert_eq!(wp.north_south, 1);
+        assert_eq!(wp.east_west, 10);
+
+        wp.apply_action(Action::W(7));
+
+        assert_eq!(wp.north_south, 1);
+        assert_eq!(wp.east_west, 3);
+
+        wp.apply_action(Action::N(1));
+
+        assert_eq!(wp.north_south, 2);
+        assert_eq!(wp.east_west, 3);
+
+        // Rotate clockwise
+        wp.rotate(180);
+        assert_eq!(wp.north_south, -2);
+        assert_eq!(wp.east_west, -3);
+
+        wp.rotate(90);
+        assert_eq!(wp.north_south, 3);
+        assert_eq!(wp.east_west, -2);
+
+        wp.rotate(90);
+        assert_eq!(wp.north_south, 2);
+        assert_eq!(wp.east_west, 3);
+
+        // Now, we are back at the start.
+        // Rotate counter-clockwise
+        wp.rotate(-90);
+        assert_eq!(wp.north_south, 3);
+        assert_eq!(wp.east_west, -2);
+    }
+
+    #[test]
+    fn test_waypoint() {
+        let mut wp = WayPoint::new();
+
+        wp.apply_action(Action::F(10));
+        assert_eq!(wp.ship_position.0, 10);
+        assert_eq!(wp.ship_position.1, 100);
+        assert_eq!(wp.north_south, 1);
+        assert_eq!(wp.east_west, 10);
+
+        wp.apply_action(Action::N(3));
+        assert_eq!(wp.ship_position.0, 10);
+        assert_eq!(wp.ship_position.1, 100);
+        assert_eq!(wp.north_south, 4);
+        assert_eq!(wp.east_west, 10);
+
+        wp.apply_action(Action::F(7));
+        assert_eq!(wp.ship_position.0, 38);
+        assert_eq!(wp.ship_position.1, 170);
+        assert_eq!(wp.north_south, 4);
+        assert_eq!(wp.east_west, 10);
+
+        wp.apply_action(Action::R(90));
+        assert_eq!(wp.ship_position.0, 38);
+        assert_eq!(wp.ship_position.1, 170);
+        assert_eq!(wp.north_south, -10);
+        assert_eq!(wp.east_west, 4);
+
+        wp.apply_action(Action::F(11));
+        assert_eq!(wp.north_south, -10);
+        assert_eq!(wp.east_west, 4);
+        assert_eq!(wp.ship_position.0, -72);
+        assert_eq!(wp.ship_position.1, 214);
+    }
+
+    #[test]
     fn test_day_12_task_1() {
         let input = [
             "F10".to_string(),
@@ -164,5 +300,17 @@ mod tests {
             "F11".to_string(),
         ];
         assert_eq!(task_1(&input), 25);
+    }
+
+    #[test]
+    fn test_day_12_task_2() {
+        let input = [
+            "F10".to_string(),
+            "N3".to_string(),
+            "F7".to_string(),
+            "R90".to_string(),
+            "F11".to_string(),
+        ];
+        assert_eq!(task_2(&input), 286);
     }
 }
