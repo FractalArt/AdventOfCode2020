@@ -172,11 +172,12 @@ fn main() {
             println!("\nAOC 2020, day 13, task 1: {}", day_13_task_1);
             assert_eq!(day_13_task_1, 5257);
 
-            // let day_13_task_2 =
-            // aoc2020::day_13::task_2(&content);
-            // println!("AOC 2020, day 13, task 2: {}", day_13_task_2);
-            // assert_eq!(day_13_task_2, );
+            let day_13_task_2 = aoc2020::day_13::task_2(&content);
+            println!("AOC 2020, day 13, task 2: {}", day_13_task_2);
+            assert_eq!(day_13_task_2, 538703333547789);
         }
         Err(_) => eprintln!("AOC 2020, day 13: Unable to read data for day 13. Skipping."),
     }
 }
+
+// 1337484891041374 to high
