@@ -7,9 +7,8 @@ use std::collections::HashMap;
 
 /// Compute the final (`end`th) number said in the game.
 pub fn task_1_2(data: &[usize], end: usize) -> usize {
-    assert!(end > data.len());
+    debug_assert!(end > data.len());
     let mut memory = HashMap::new();
-    let mut previous = data[data.len() - 1];
 
     // Insert all the starting numbers into the memory, except for the last one
     // which is stored in `previous`.
@@ -17,14 +16,14 @@ pub fn task_1_2(data: &[usize], end: usize) -> usize {
         memory.insert(data[i], i + 1);
     }
 
-    for iter in data.len() + 1..=end {
-        match memory.insert(previous, iter - 1) {
-            None => previous = 0,
-            Some(val) => previous = iter - 1 - val,
-        }
-    }
-
-    previous
+    (data.len()..end)
+        .into_iter()
+        .fold(data[data.len() - 1], |previous, index| {
+            match memory.insert(previous, index) {
+                None => 0,
+                Some(val) => index - val,
+            }
+        })
 }
 
 #[cfg(test)]
