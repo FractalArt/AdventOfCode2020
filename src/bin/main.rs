@@ -192,9 +192,14 @@ fn main() {
         eprintln!("AOC 2020, day 14: Unable to read data for day 14. Skipping.");
     }
 
-    use itertools::Itertools;
-    vec![0, 1]
-        .into_iter()
-        .combinations(3)
-        .for_each(|c| println!("{:?}", c));
+    // Day 15
+    let data_day_15 = [18, 11, 9, 0, 5, 1];
+
+    let day_15_task_1 = aoc2020::day_15::task_1(&data_day_15, 2020);
+    println!("\nAOC 2020, day 15, task 1: {}", day_15_task_1);
+    assert_eq!(day_15_task_1, 959);
+
+    // let day_15_task_2 = aoc2020::day_15::task_2(&data_day_15);
+    // println!("AOC 2020, day 15, task 2: {}", day_15_task_2);
+    // assert_eq!(day_15_task_2,);
 }
