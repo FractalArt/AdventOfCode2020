@@ -178,6 +178,17 @@ fn main() {
         }
         Err(_) => eprintln!("AOC 2020, day 13: Unable to read data for day 13. Skipping."),
     }
-}
 
-// 1337484891041374 to high
+    // Day 14
+    if let Ok(data_day_14) = read_data::<String, _>("data/day14.txt") {
+        let day_14_task_1 = aoc2020::day_14::task_1(&data_day_14);
+        println!("\nAOC 2020, day 14, task 1: {}", day_14_task_1);
+        assert_eq!(day_14_task_1, 11884151942312);
+
+    // let day_14_task_2 = aoc2020::day_14::task_2(&data_day_14);
+    // println!("AOC 2020, day 14, task 2: {}", day_14_task_2);
+    // assert_eq!(day_14_task_2,);
+    } else {
+        eprintln!("AOC 2020, day 14: Unable to read data for day 14. Skipping.");
+    }
+}
