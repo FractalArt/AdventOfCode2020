@@ -195,11 +195,11 @@ fn main() {
     // Day 15
     let data_day_15 = [18, 11, 9, 0, 5, 1];
 
-    let day_15_task_1 = aoc2020::day_15::task_1(&data_day_15, 2020);
+    let day_15_task_1 = aoc2020::day_15::task_1_2(&data_day_15, 2020);
     println!("\nAOC 2020, day 15, task 1: {}", day_15_task_1);
     assert_eq!(day_15_task_1, 959);
 
-    // let day_15_task_2 = aoc2020::day_15::task_2(&data_day_15);
-    // println!("AOC 2020, day 15, task 2: {}", day_15_task_2);
-    // assert_eq!(day_15_task_2,);
+    let day_15_task_2 = aoc2020::day_15::task_1_2(&data_day_15, 30000000);
+    println!("AOC 2020, day 15, task 2: {}", day_15_task_2);
+    assert_eq!(day_15_task_2, 116590);
 }

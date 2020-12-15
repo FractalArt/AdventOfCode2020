@@ -5,8 +5,8 @@
 //! be found [here](https://adventofcode.com/2020/day/15).
 use std::collections::HashMap;
 
-/// Compute the final number said in the game.
-pub fn task_1(data: &[usize], end: usize) -> usize {
+/// Compute the final (`end`th) number said in the game.
+pub fn task_1_2(data: &[usize], end: usize) -> usize {
     assert!(end > data.len());
     let mut memory = HashMap::new();
     let mut previous = data[data.len() - 1];
@@ -32,15 +32,15 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_day_15_task_1() {
+    fn test_day_15_task_1_2() {
         let input = [0, 3, 6];
-        assert_eq!(task_1(&input, 4), 0);
-        assert_eq!(task_1(&input, 5), 3);
-        assert_eq!(task_1(&input, 6), 3);
-        assert_eq!(task_1(&input, 7), 1);
-        assert_eq!(task_1(&input, 8), 0);
-        assert_eq!(task_1(&input, 9), 4);
-        assert_eq!(task_1(&input, 10), 0);
-        assert_eq!(task_1(&input, 2020), 436);
+        assert_eq!(task_1_2(&input, 4), 0);
+        assert_eq!(task_1_2(&input, 5), 3);
+        assert_eq!(task_1_2(&input, 6), 3);
+        assert_eq!(task_1_2(&input, 7), 1);
+        assert_eq!(task_1_2(&input, 8), 0);
+        assert_eq!(task_1_2(&input, 9), 4);
+        assert_eq!(task_1_2(&input, 10), 0);
+        assert_eq!(task_1_2(&input, 2020), 436);
     }
 }
