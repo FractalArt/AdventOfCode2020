@@ -3,6 +3,7 @@
 //!
 //! The problem formulation for these challenges can
 //! be found [here](https://adventofcode.com/2020/day/14).
+use itertools::Itertools;
 use std::collections::HashMap;
 
 /// Compute the sum of the entries present in the memory after all writing operations.
@@ -31,6 +32,24 @@ pub fn task_1(data: &[String]) -> usize {
         .sum::<usize>()
 }
 
+/// Compute the sum of the entries present in the memory after all writing operations.
+pub fn task_2(data: &[String]) -> usize {
+    data.iter()
+        .map(|l| parse_input(&l))
+        .fold(("", HashMap::new()), |(mask, mut memory), op| match op {
+            Input::Mask(new_mask) => (new_mask, memory),
+            Input::Memory((address, val)) => {
+                for add in get_addresses(mask, address) {
+                    memory.insert(add, val);
+                }
+                (mask, memory)
+            }
+        })
+        .1
+        .values()
+        .sum::<usize>()
+}
+
 /// Parse an input line either to a mask or a memory access.
 fn parse_input<'a>(line: &'a str) -> Input<'a> {
     lazy_static::lazy_static! {
@@ -46,6 +65,42 @@ fn parse_input<'a>(line: &'a str) -> Input<'a> {
             captures.get(2).unwrap().as_str().parse::<usize>().unwrap(),
         ))
     }
+}
+
+/// Get all the addresses that can be obtained from a mask and the initially passes address.
+fn get_addresses(mask: &str, address: usize) -> Vec<usize> {
+    // Collect the indices of the floating point bits
+    let floating_bits = mask
+        .chars()
+        .enumerate()
+        .filter_map(|(i, val)| if val == 'X' { Some(i) } else { None })
+        .collect::<Vec<_>>();
+    // Reference address where all `X` are set to 0
+    let reference = mask
+        .chars()
+        .zip(format!("{:0>36b}", address).chars())
+        .map(|(m, c)| match m {
+            'X' => '0',
+            '0' => c,
+            _ => '1',
+        })
+        .collect::<Vec<_>>();
+
+    // Loop over all length of combinations of floating indices
+    (0..=floating_bits.len())
+        // For all the combintations of that length
+        .flat_map(|number| {
+            // Create vector with entries corresponding to indices in the combination set to 1
+            floating_bits
+                .iter()
+                .combinations(number)
+                .map(|combination| {
+                    let mut clone = reference.clone();
+                    combination.into_iter().for_each(|i| clone[*i] = '1');
+                    usize::from_str_radix(&clone.into_iter().collect::<String>(), 2).unwrap()
+                })
+        })
+        .collect::<Vec<_>>()
 }
 
 /// Enumerate the possible inputs, they either designate
@@ -92,5 +147,29 @@ mod tests {
             "mem[8] = 0".to_string(),
         ];
         assert_eq!(task_1(&input), 165);
+    }
+
+    #[test]
+    fn test_get_addresses() {
+        let mask = "000000000000000000000000000000X1001X";
+        let address = 42;
+        let addresses = get_addresses(mask, address);
+        assert_eq!(addresses.len(), 4);
+        assert!(addresses.iter().find(|&&addr| addr == 26usize).is_some());
+        assert!(addresses.iter().find(|&&addr| addr == 27usize).is_some());
+        assert!(addresses.iter().find(|&&addr| addr == 58usize).is_some());
+        assert!(addresses.iter().find(|&&addr| addr == 59usize).is_some());
+        assert!(addresses.iter().find(|&&addr| addr == 60usize).is_none());
+    }
+
+    #[test]
+    fn test_day_14_task_2() {
+        let input = [
+            "mask = 000000000000000000000000000000X1001X".to_string(),
+            "mem[42] = 100".to_string(),
+            "mask = 00000000000000000000000000000000X0XX".to_string(),
+            "mem[26] = 1".to_string(),
+        ];
+        assert_eq!(task_2(&input), 208);
     }
 }

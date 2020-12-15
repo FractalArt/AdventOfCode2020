@@ -185,10 +185,16 @@ fn main() {
         println!("\nAOC 2020, day 14, task 1: {}", day_14_task_1);
         assert_eq!(day_14_task_1, 11884151942312);
 
-    // let day_14_task_2 = aoc2020::day_14::task_2(&data_day_14);
-    // println!("AOC 2020, day 14, task 2: {}", day_14_task_2);
-    // assert_eq!(day_14_task_2,);
+        let day_14_task_2 = aoc2020::day_14::task_2(&data_day_14);
+        println!("AOC 2020, day 14, task 2: {}", day_14_task_2);
+        assert_eq!(day_14_task_2, 2625449018811);
     } else {
         eprintln!("AOC 2020, day 14: Unable to read data for day 14. Skipping.");
     }
+
+    use itertools::Itertools;
+    vec![0, 1]
+        .into_iter()
+        .combinations(3)
+        .for_each(|c| println!("{:?}", c));
 }
