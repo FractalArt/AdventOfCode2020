@@ -202,4 +202,17 @@ fn main() {
     let day_15_task_2 = aoc2020::day_15::task_1_2(&data_day_15, 30000000);
     println!("AOC 2020, day 15, task 2: {}", day_15_task_2);
     assert_eq!(day_15_task_2, 116590);
+
+    // Day 16
+    if let Ok(data_day_16) = read_data::<String, _>("data/day16.txt") {
+        let day_16_task_1 = aoc2020::day_16::task_1(&data_day_16);
+        println!("\nAOC 2020, day 16, task 1: {}", day_16_task_1);
+        assert_eq!(day_16_task_1, 23954);
+
+        let day_16_task_2 = aoc2020::day_16::task_2(&data_day_16);
+        println!("AOC 2020, day 16, task 2: {}", day_16_task_2);
+        assert_eq!(day_16_task_2, 453459307723);
+    } else {
+        eprintln!("AOC 2020, day 16: Unable to read data for day 16. Skipping.");
+    }
 }
