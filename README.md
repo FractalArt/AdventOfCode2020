@@ -44,6 +44,15 @@ Attempting the [AOC 2020](https://adventofcode.com/2020/) problems as an excuse 
 | Day 17, Part 2 | :heavy_check_mark: |
 
 ***
+
+## Comments
+
+### Day 17
+
+I did not know about [multi_cartesian_product](https://docs.rs/itertools/0.9.0/itertools/trait.Itertools.html#method.multi_cartesian_product) which would have made the solution a bit cleaner and could probably be used to make it generic over the dimension. However, I will keep my initial solution in the repository the way it was before I started looking at other
+solutions on `reddit` and simply keep this as a note in case it becomes useful in the future.
+
+***
 ## Additional information
 
 The main binary computes all the solutions and prints them to the screen. Its execution can be triggered
