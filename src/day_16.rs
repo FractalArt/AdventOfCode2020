@@ -44,16 +44,16 @@ pub fn task_2(data: &[String]) -> usize {
                 .chain(f.range_2.0..=f.range_2.1)
         })
         .collect();
-        
+
     // Filter the nearby tickets, retaining only the valid ones.
     let valid_nearby = collect_nearby_tickets(&data)
         .into_iter()
         .filter(|t| t.iter().all(|v| valid_numbers.contains(v)))
         .collect::<Vec<_>>();
-    
+
     // Get the content of your ticket.
     let your_ticket = collect_your_ticket(&data);
-    
+
     // For each field, find the columns whose entries fullfil the field's ranges.
     let field_index_candidates = fields
         .iter()
@@ -70,7 +70,7 @@ pub fn task_2(data: &[String]) -> usize {
             (&f.name, matches)
         })
         .collect::<HashMap<_, _>>();
-    
+
     // By elimination, find the unambiguous columns associated to each field.
     let mut identified_cols = HashSet::new();
     let mut identified_fields = HashSet::new();
