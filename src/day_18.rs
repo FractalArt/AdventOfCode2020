@@ -9,6 +9,12 @@ pub fn task_1(data: &[String]) -> usize {
     data.iter().map(|l| eval(l)).sum()
 }
 
+/// Compute the sum of all the evaluated expressions in the input.
+/// This time addition has precedence over multiplication.
+pub fn task_2(data: &[String]) -> usize {
+    data.iter().map(|l| eval_add_prec(l)).sum()
+}
+
 /// The operators that are allowed in the expression.
 enum Op {
     Add,
@@ -74,12 +80,79 @@ fn eval<'a>(data: &str) -> usize {
     cumulative
 }
 
+/// Evaluate an expression from its string representation with addition having precedence over
+/// multiplication.
+fn eval_add_prec<'a>(data: &str) -> usize {
+    let mut cumulative = 1; // Accumulate the result of the operations
+    let mut op = None; // Keep track of the last operator (+,*)
+    let mut open_counter = 0; // Keep track of the currently opened brackets
+    let mut tmp = vec![]; // Store expressions in brackets
+    let mut sum = 0;
+    for c in data.chars() {
+        match c {
+            ' ' => continue,
+            '(' => {
+                if open_counter > 0 {
+                    tmp.push(c)
+                }
+                open_counter += 1;
+            }
+            ')' => {
+                open_counter -= 1;
+                if open_counter == 0 {
+                    match op {
+                        None => sum = eval_add_prec(&tmp.into_iter().collect::<String>()),
+                        Some(Op::Add) => sum += eval_add_prec(&tmp.into_iter().collect::<String>()),
+                        Some(Op::Mul) => {
+                            cumulative *= sum;
+                            sum = eval_add_prec(&tmp.into_iter().collect::<String>())
+                        }
+                    }
+                    tmp = vec![];
+                } else {
+                    tmp.push(c)
+                }
+            }
+            '*' => {
+                if open_counter > 0 {
+                    tmp.push(c)
+                } else {
+                    op = Some(Op::Mul)
+                }
+            }
+            '+' => {
+                if open_counter > 0 {
+                    tmp.push(c)
+                } else {
+                    op = Some(Op::Add)
+                }
+            }
+            c => {
+                if open_counter > 0 {
+                    tmp.push(c)
+                } else {
+                    match op {
+                        None => sum = c.to_string().parse::<usize>().unwrap(),
+                        Some(Op::Add) => sum += c.to_string().parse::<usize>().unwrap(),
+                        Some(Op::Mul) => {
+                            cumulative *= sum;
+                            sum = c.to_string().parse::<usize>().unwrap()
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    cumulative * sum
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
-    fn test_parse() {
+    fn test_eval() {
         assert_eq!(eval("3"), 3);
         assert_eq!(eval("3 + 2"), 5);
         assert_eq!(eval("(3 + 2)"), 5);
@@ -92,5 +165,11 @@ mod tests {
             eval("((2 + 4 * 9) * (6 + 9 * 8 + 6) + 6) + 2 + 4 * 2"),
             13632
         );
+    }
+
+    #[test]
+    fn test_eval_prec_plus() {
+        assert_eq!(eval_add_prec("1 + (2 * 3) + (4 * (5 + 6))"), 51);
+        assert_eq!(eval_add_prec("2 * 3 + (4 * 5)"), 46);
     }
 }
