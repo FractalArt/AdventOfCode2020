@@ -246,11 +246,11 @@ fn main() {
     if let Ok(data_day_19) = std::fs::read_to_string("data/day19.txt") {
         let day_19_task_1 = aoc2020::day_19::task_1(&data_day_19);
         println!("\nAOC 2020, day 19, task 1: {}", day_19_task_1);
-    // assert_eq!(day_19_task_1,);
+        assert_eq!(day_19_task_1, 176);
 
-    // let day_19_task_2 = aoc2020::day_19::task_2(&data_day_19);
-    // println!("AOC 2020, day 19, task 2: {}", day_19_task_2);
-    // assert_eq!(day_19_task_2, );
+        // let day_19_task_2 = aoc2020::day_19::task_2(&data_day_19);
+        // println!("AOC 2020, day 19, task 2: {}", day_19_task_2);
+        // assert_eq!(day_19_task_2, );
     } else {
         eprintln!("AOC 2020, day 19: Unable to read data for day 19. Skipping.");
     }
