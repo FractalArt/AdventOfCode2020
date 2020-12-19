@@ -44,6 +44,7 @@ Attempting the [AOC 2020](https://adventofcode.com/2020/) problems as an excuse 
 | Day 17, Part 2 | :heavy_check_mark: |
 | Day 18, Part 1 | :heavy_check_mark: |
 | Day 18, Part 2 | :heavy_check_mark: |
+| Day 19, Part 1 | :heavy_check_mark: |
 
 ***
 

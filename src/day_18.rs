@@ -1,5 +1,5 @@
 //! This module contains the code
-//! for the solution of the seventeenth day's challenges.
+//! for the solution of the eighteenth day's challenges.
 //!
 //! The problem formulation for these challenges can
 //! be found [here](https://adventofcode.com/2020/day/18).
