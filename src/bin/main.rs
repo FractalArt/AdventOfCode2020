@@ -277,9 +277,12 @@ fn main() {
         println!("\nAOC 2020, day 21, task 1: {}", day_21_task_1);
         assert_eq!(day_21_task_1, 1930);
 
-    // let day_21_task_2 = aoc2020::day_21::task_2(&data_day_21);
-    // println!("AOC 2020, day 21, task 2: {}", day_21_task_2);
-    // assert_eq!(day_21_task_2,);
+        let day_21_task_2 = aoc2020::day_21::task_2(&data_day_21);
+        println!("AOC 2020, day 21, task 2: {}", day_21_task_2);
+        assert_eq!(
+            day_21_task_2,
+            "spcqmzfg,rpf,dzqlq,pflk,bltrbvz,xbdh,spql,bltzkxx"
+        );
     } else {
         eprintln!("AOC 2020, day 18: Unable to read data for day 18. Skipping.");
     }

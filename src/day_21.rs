@@ -3,6 +3,7 @@
 //!
 //! The problem formulation for these challenges can
 //! be found [here](https://adventofcode.com/2020/day/21).
+use itertools::Itertools;
 use std::collections::{HashMap, HashSet};
 
 type INGREDIENTS<'a> = HashSet<&'a str>;
@@ -13,6 +14,32 @@ type RECIPES<'a> = Vec<(ALLERGENS<'a>, INGREDIENTS<'a>)>;
 /// appear in recipes.
 pub fn task_1(data: &[String]) -> usize {
     let recipes: RECIPES = data.iter().map(|r| parse_recipe(r)).collect();
+    let identified = get_ingredients_with_allergens(&recipes);
+    let identified_ingredients = identified.values().collect::<HashSet<_>>();
+
+    recipes
+        .iter()
+        .map(|(_, v)| v)
+        .flat_map(|v| v.iter())
+        .filter(|&&x| !identified_ingredients.contains(&x))
+        .count()
+}
+
+/// Identify the ingredients containing allergens, sort them according to their allergens and
+/// print the names of these ingredients in the sorted order separated by a comma.
+pub fn task_2(data: &[String]) -> String {
+    let recipes: RECIPES = data.iter().map(|r| parse_recipe(r)).collect();
+    let identified = get_ingredients_with_allergens(&recipes);
+
+    identified
+        .iter()
+        .sorted_by(|(allergen_1, _), (allergen_2, _)| Ord::cmp(&allergen_1, &allergen_2))
+        .map(|(_, ingredient)| ingredient)
+        .join(",")
+}
+
+/// Get a map relating the allergens (keys) with the ingredients they are contained in (values).
+fn get_ingredients_with_allergens<'a>(recipes: &RECIPES<'a>) -> HashMap<&'a str, &'a str> {
     let allergens: HashSet<&&str> = recipes
         .iter()
         .map(|(a, _)| a)
@@ -51,16 +78,10 @@ pub fn task_1(data: &[String]) -> usize {
             })
             .unwrap();
 
-        identified.insert(candidates.0, candidates.1);
+        identified.insert(*candidates.0, candidates.1);
         identified_ingredients.insert(candidates.1);
     }
-
-    recipes
-        .iter()
-        .map(|(_, v)| v)
-        .flat_map(|v| v.iter())
-        .filter(|&&x| !identified_ingredients.contains(x))
-        .count()
+    identified
 }
 
 /// Parse the recipe and return the allergens and ingredients in a tuple.
@@ -122,5 +143,16 @@ mod tests {
             "sqjhc mxmxvkd sbzzf (contains fish)".to_string(),
         ];
         assert_eq!(task_1(&input), 5);
+    }
+
+    #[test]
+    fn test_day_21_task_2() {
+        let input = [
+            "mxmxvkd kfcds sqjhc nhms (contains dairy, fish)".to_string(),
+            "trh fvjkl sbzzf mxmxvkd (contains dairy)".to_string(),
+            "sqjhc fvjkl (contains soy)".to_string(),
+            "sqjhc mxmxvkd sbzzf (contains fish)".to_string(),
+        ];
+        assert_eq!(task_2(&input), "mxmxvkd,sqjhc,fvjkl");
     }
 }
