@@ -3,21 +3,19 @@
 //!
 //! The problem formulation for these challenges can
 //! be found [here](https://adventofcode.com/2020/day/19).
-use std::collections::HashMap;
 use itertools::Itertools;
+use std::collections::HashMap;
 
 /// Find all the images that match rule 0.
 pub fn task_1(data: &str) -> usize {
     let split = data.split("\n\n").collect::<Vec<&str>>();
 
-    let rules: HashMap<usize, Rule> = split[0]
-        .split("\n")
-        .map(|r| extract_rule(r))
-        .collect();
+    let rules: HashMap<usize, Rule> = split[0].split("\n").map(|r| extract_rule(r)).collect();
 
     let matches = get_all_matches(0, &rules);
 
-    split[1].split_whitespace()
+    split[1]
+        .split_whitespace()
         .filter(|img| matches.iter().any(|m| img == m))
         .count()
 }
@@ -81,25 +79,25 @@ fn extract_rule<'a>(rule: &'a str) -> (usize, Rule<'a>) {
 fn get_all_matches<'a>(rule: usize, rules: &HashMap<usize, Rule<'a>>) -> Vec<String> {
     match &rules[&rule] {
         Rule::Letter(a) => vec![a.to_string()],
-        Rule::One(v) => {
-            v.iter()
+        Rule::One(v) => v
+            .iter()
             .map(|&r| get_all_matches(r, &rules))
             .multi_cartesian_product()
             .map(|v| v.into_iter().collect::<String>())
-            .collect::<Vec<_>>()
-        },
-        Rule::Either(v1, v2) => {
-            v1.iter()
+            .collect::<Vec<_>>(),
+        Rule::Either(v1, v2) => v1
+            .iter()
             .map(|&r| get_all_matches(r, &rules))
             .multi_cartesian_product()
             .map(|v| v.into_iter().collect::<String>())
-            .chain(v2.iter()
-            .map(|&r| get_all_matches(r, &rules))
-            .multi_cartesian_product()
-            .map(|v| v.into_iter().collect::<String>())).collect()
-        }
+            .chain(
+                v2.iter()
+                    .map(|&r| get_all_matches(r, &rules))
+                    .multi_cartesian_product()
+                    .map(|v| v.into_iter().collect::<String>()),
+            )
+            .collect(),
     }
-    
 }
 
 /// The different combinations a rule can be.
@@ -145,20 +143,33 @@ mod tests {
         assert_eq!(extract_rule(r#"3: "a""#), (3, Rule::Letter("a")));
         assert_eq!(extract_rule(r"4: 12"), (4, Rule::One(vec![12])));
         assert_eq!(extract_rule(r"4: 12 13"), (4, Rule::One(vec![12, 13])));
-        assert_eq!(extract_rule(r"4: 12 13 | 14 15"), (4, Rule::Either(vec![12, 13], vec![14, 15])));
-        assert_eq!(extract_rule(r"4: 12 | 14 15"), (4, Rule::Either(vec![12], vec![14, 15])));
-        assert_eq!(extract_rule(r"4: 12 13 | 14"), (4, Rule::Either(vec![12, 13], vec![14])));
-        assert_eq!(extract_rule(r"4: 12 | 14"), (4, Rule::Either(vec![12], vec![14])));
+        assert_eq!(
+            extract_rule(r"4: 12 13 | 14 15"),
+            (4, Rule::Either(vec![12, 13], vec![14, 15]))
+        );
+        assert_eq!(
+            extract_rule(r"4: 12 | 14 15"),
+            (4, Rule::Either(vec![12], vec![14, 15]))
+        );
+        assert_eq!(
+            extract_rule(r"4: 12 13 | 14"),
+            (4, Rule::Either(vec![12, 13], vec![14]))
+        );
+        assert_eq!(
+            extract_rule(r"4: 12 | 14"),
+            (4, Rule::Either(vec![12], vec![14]))
+        );
     }
 
     #[test]
     fn test_multi_cartesian_product() {
         let possibilities = vec![vec!["a", "b"], vec!["c"]];
-        let combis = possibilities.into_iter().multi_cartesian_product()
+        let combis = possibilities
+            .into_iter()
+            .multi_cartesian_product()
             .collect::<std::collections::HashSet<_>>();
         assert!(combis.contains(&vec!["a", "c"]));
         assert!(combis.contains(&vec!["b", "c"]));
-
     }
 
     #[test]
@@ -170,7 +181,9 @@ mod tests {
             (3, Rule::Either(vec![4, 5], vec![5, 4])),
             (4, Rule::Letter("a")),
             (5, Rule::Letter("b")),
-        ].into_iter().collect::<HashMap<_, _>>();
+        ]
+        .into_iter()
+        .collect::<HashMap<_, _>>();
 
         let matches = get_all_matches(0, &rules);
         assert_eq!(matches.len(), 8);

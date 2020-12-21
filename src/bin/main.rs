@@ -248,10 +248,39 @@ fn main() {
         println!("\nAOC 2020, day 19, task 1: {}", day_19_task_1);
         assert_eq!(day_19_task_1, 176);
 
-        // let day_19_task_2 = aoc2020::day_19::task_2(&data_day_19);
-        // println!("AOC 2020, day 19, task 2: {}", day_19_task_2);
-        // assert_eq!(day_19_task_2, );
+        println!("AOC 2020, day 19, task 2: To be done");
+    // let day_19_task_2 = aoc2020::day_19::task_2(&data_day_19);
+    // println!("AOC 2020, day 19, task 2: {}", day_19_task_2);
+    // assert_eq!(day_19_task_2, );
     } else {
         eprintln!("AOC 2020, day 19: Unable to read data for day 19. Skipping.");
+    }
+
+    // Day 20
+    println!("\nAOC 2020, day 20, task 1: To be done");
+    println!("AOC 2020, day 20, task 2: To be done");
+    // if let Ok(data_day_20) = std::fs::read_to_string("data/day20.txt") {
+    // let day_20_task_1 = aoc2020::day_20::task_1(&data_day_20, 10);
+    // println!("\nAOC 2020, day 20, task 1: {}", day_20_task_1);
+    // assert_eq!(day_20_task_1, );
+
+    // let day_20_task_2 = aoc2020::day_20::task_2(&data_day_20);
+    // println!("AOC 2020, day 20, task 2: {}", day_20_task_2);
+    // assert_eq!(day_20_task_2, );
+    // } else {
+    //     eprintln!("AOC 2020, day 20: Unable to read data for day 20. Skipping.");
+    // }
+
+    // Day 21
+    if let Ok(data_day_21) = read_data::<String, _>("data/day21.txt") {
+        let day_21_task_1 = aoc2020::day_21::task_1(&data_day_21);
+        println!("\nAOC 2020, day 21, task 1: {}", day_21_task_1);
+        assert_eq!(day_21_task_1, 1930);
+
+    // let day_21_task_2 = aoc2020::day_21::task_2(&data_day_21);
+    // println!("AOC 2020, day 21, task 2: {}", day_21_task_2);
+    // assert_eq!(day_21_task_2,);
+    } else {
+        eprintln!("AOC 2020, day 18: Unable to read data for day 18. Skipping.");
     }
 }
