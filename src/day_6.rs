@@ -8,7 +8,6 @@ use std::collections::HashSet;
 /// Compute the sum of the questions answered with yes per group.
 pub fn task_1(data: &str) -> usize {
     data.split("\n\n")
-        .map(|s| s)
         .map(|s| count_questions_yes_answers(s))
         .sum()
 }
@@ -16,7 +15,6 @@ pub fn task_1(data: &str) -> usize {
 /// Compute the sum of the number of questions that have been answered with yes by __all__ group members.
 pub fn task_2(data: &str) -> usize {
     data.split("\n\n")
-        .map(|s| s)
         .map(|s| count_questions_all_yes_answers(s))
         .sum()
 }

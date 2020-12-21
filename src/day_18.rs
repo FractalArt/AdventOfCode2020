@@ -22,7 +22,7 @@ enum Op {
 }
 
 /// Evaluate an expression from its string representation.
-fn eval<'a>(data: &str) -> usize {
+fn eval(data: &str) -> usize {
     let mut cumulative = 0; // Accumulate the result of the operations
     let mut op = None; // Keep track of the last operator (+,*)
     let mut open_counter = 0; // Keep track of the currently opened brackets
@@ -82,7 +82,7 @@ fn eval<'a>(data: &str) -> usize {
 
 /// Evaluate an expression from its string representation with addition having precedence over
 /// multiplication.
-fn eval_add_prec<'a>(data: &str) -> usize {
+fn eval_add_prec(data: &str) -> usize {
     let mut cumulative = 1; // Accumulate the result of the operations
     let mut op = None; // Keep track of the last operator (+,*)
     let mut open_counter = 0; // Keep track of the currently opened brackets

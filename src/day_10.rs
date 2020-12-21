@@ -22,7 +22,7 @@ pub fn task_1(data: &[u32]) -> u32 {
 
 /// Compute the number of valid adaptor chains.
 pub fn task_2(data: &[u32]) -> usize {
-    let sorted = data.iter().sorted().map(|x| *x).collect::<Vec<_>>();
+    let sorted = data.iter().sorted().copied().collect::<Vec<_>>();
     valid_next(0, 0, &sorted, &mut HashMap::new())
 }
 

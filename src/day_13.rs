@@ -12,7 +12,7 @@ pub fn task_1(data: &str) -> usize {
 
     let time: usize = split[0].parse().unwrap();
     let result = split[1]
-        .split(",")
+        .split(',')
         .filter_map(|s| s.parse::<usize>().ok())
         .map(|x| (x, (time / x) * x + if time % x != 0 { x } else { 0 } - time))
         .min_by(|x, y| x.1.cmp(&y.1))
@@ -26,13 +26,13 @@ pub fn task_2(data: &str) -> i128 {
     let split = data.split_whitespace().collect::<Vec<_>>();
     assert_eq!(split.len(), 2);
     split[1]
-        .split(",")
+        .split(',')
         .enumerate()
         .filter_map(|(i, s)| match s.parse::<i128>() {
             Err(_) => None,
             Ok(val) => Some((modulus(-(i as i128), val), val)),
         })
-        .fold((0, 1), |acc, c| chinese_remainder(acc, c))
+        .fold((0, 1), chinese_remainder)
         .0
 }
 
@@ -55,6 +55,7 @@ fn modulus(n: i128, p: i128) -> i128 {
 
 /// Compute the modular inverse of an integer `n` modulo `p`
 /// using the extended euclidean algorithm.
+#[allow(clippy::many_single_char_names)]
 fn mod_inv(n: i128, p: i128) -> i128 {
     let mut s = (1, 0);
     let mut t = (0, 1);

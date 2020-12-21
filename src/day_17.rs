@@ -42,11 +42,7 @@ impl Grid {
     fn new(data: &str, four_dimensional: bool) -> Self {
         let raw_grid = data
             .split_whitespace()
-            .map(|l| {
-                l.chars()
-                    .map(|c| if c == '#' { true } else { false })
-                    .collect::<Vec<_>>()
-            })
+            .map(|l| l.chars().map(|c| c == '#').collect::<Vec<_>>())
             .collect::<Vec<_>>();
 
         // Make sure the grid is quadratic

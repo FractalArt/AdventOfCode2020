@@ -7,7 +7,7 @@ use regex::Regex;
 use std::collections::HashSet;
 
 /// Find the state of the accumulator before entering the infinite loop.
-pub fn task_1(data: &Vec<String>) -> isize {
+pub fn task_1(data: &[String]) -> isize {
     let instructions: Vec<Instruction> = data.iter().map(|l| parse_instruction(l)).collect();
 
     match helper(&instructions) {
@@ -17,28 +17,21 @@ pub fn task_1(data: &Vec<String>) -> isize {
 }
 
 /// Fix the bug and compute the state of the accumulator after the program finishes.
-pub fn task_2(data: &Vec<String>) -> isize {
+pub fn task_2(data: &[String]) -> isize {
     let instructions: Vec<Instruction> = data.iter().map(|l| parse_instruction(l)).collect();
     // Get the positions of all jmp and nop instructions
-    let possible_swaps = instructions
+    instructions
         .iter()
         .enumerate()
-        .filter(|(_, op)| match op {
-            Instruction::Jmp(_) | Instruction::Nop(_) => true,
-            _ => false,
-        })
+        .filter(|(_, op)| matches!(op, Instruction::Jmp(_) | Instruction::Nop(_)))
         .map(|(i, _)| i)
-        .collect::<Vec<_>>();
-
-    // Try out all possible replacements
-    possible_swaps
-        .into_iter()
+        // Try out all possible replacements
         .map(|index| {
             let tmp = instructions
                 .iter()
                 .enumerate()
                 .map(|(i, op)| if i == index { op.swap() } else { op.clone() })
-                .collect();
+                .collect::<Vec<_>>();
             helper(&tmp)
         })
         .find_map(|i| match i {
@@ -51,7 +44,7 @@ pub fn task_2(data: &Vec<String>) -> isize {
 /// Check whether the given instructions lead to a loop or not.
 /// Return the value of the accumulator at the end of the program
 /// or when the loop starts, wrapped in an `ExitOn` enum.
-fn helper(instructions: &Vec<Instruction>) -> ExitOn {
+fn helper(instructions: &[Instruction]) -> ExitOn {
     let mut visited: HashSet<usize> = HashSet::new();
     let mut accumulator: isize = 0;
     let mut index: isize = 0;
@@ -59,7 +52,7 @@ fn helper(instructions: &Vec<Instruction>) -> ExitOn {
     loop {
         match instructions[index as usize] {
             Instruction::Nop(_) => index += 1,
-            Instruction::Jmp(val) => index = index + val,
+            Instruction::Jmp(val) => index += val,
             Instruction::Acc(val) => {
                 accumulator += val;
                 index += 1;
@@ -103,7 +96,7 @@ impl Instruction {
 }
 
 /// Parse an instruction from the input file.
-fn parse_instruction<'a>(code: &'a str) -> Instruction {
+fn parse_instruction(code: &str) -> Instruction {
     lazy_static::lazy_static! {
         static ref INSTRUCTION: Regex = Regex::new(r"^(\w\w\w) ([+|-])(\d+)$").unwrap();
     }

@@ -10,7 +10,7 @@ use std::collections::HashMap;
 pub fn task_1(data: &str) -> usize {
     let split = data.split("\n\n").collect::<Vec<&str>>();
 
-    let rules: HashMap<usize, Rule> = split[0].split("\n").map(|r| extract_rule(r)).collect();
+    let rules: HashMap<usize, Rule> = split[0].split('\n').map(|r| extract_rule(r)).collect();
 
     let matches = get_all_matches(0, &rules);
 
@@ -21,7 +21,7 @@ pub fn task_1(data: &str) -> usize {
 }
 
 /// Extract a rule from its string representation.
-fn extract_rule<'a>(rule: &'a str) -> (usize, Rule<'a>) {
+fn extract_rule(rule: &str) -> (usize, Rule) {
     lazy_static::lazy_static! {
         static ref RE_LETTERS: regex::Regex = regex::Regex::new(r#"^(\d*): "(\w)"$"#).unwrap();
         static ref RE_RULE_1: regex::Regex = regex::Regex::new(r"^(\d*):(( \d*)*) \|(( \d*)*)$").unwrap();

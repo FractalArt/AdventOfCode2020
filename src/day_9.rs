@@ -15,7 +15,7 @@ pub fn task_1(data: &[u64], memory: usize) -> u64 {
                 .combinations(2)
                 .any(|t| t[0] + t[1] == w[memory])
             {
-                Some(w[memory].clone())
+                Some(w[memory])
             } else {
                 None
             }

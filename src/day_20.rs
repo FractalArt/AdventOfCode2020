@@ -46,7 +46,7 @@ struct Tile {
 impl Tile {
     // TODO: Get rid of the `ndarray` dependence
     fn from_string(data: &str, tile_dim: usize) -> Tile {
-        let mut lines = data.split("\n");
+        let mut lines = data.split('\n');
         let id = lines
             .next()
             .unwrap()

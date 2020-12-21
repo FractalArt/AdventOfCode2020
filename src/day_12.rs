@@ -73,7 +73,7 @@ impl Direction {
         let degrees_int = (degrees / 90) % 4;
         let mut new_direction = (direction + degrees_int) % 4;
         if new_direction < 0 {
-            new_direction = 4 + new_direction
+            new_direction += 4
         }
         match new_direction {
             0 => Self::North,

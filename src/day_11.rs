@@ -172,17 +172,7 @@ impl Room {
     fn occupied(&self) -> usize {
         self.spots
             .iter()
-            .map(|r| {
-                r.iter()
-                    .filter(|c| {
-                        if let Spot::OccupiedSeat = c {
-                            true
-                        } else {
-                            false
-                        }
-                    })
-                    .count()
-            })
+            .map(|r| r.iter().filter(|c| matches!(c, Spot::OccupiedSeat)).count())
             .sum()
     }
 

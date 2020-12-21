@@ -39,11 +39,13 @@ pub fn task_2(data: &[String]) -> String {
 }
 
 /// Get a map relating the allergens (keys) with the ingredients they are contained in (values).
-fn get_ingredients_with_allergens<'a>(recipes: &RECIPES<'a>) -> HashMap<&'a str, &'a str> {
+fn get_ingredients_with_allergens<'a>(
+    recipes: &[(ALLERGENS<'a>, INGREDIENTS<'a>)],
+) -> HashMap<&'a str, &'a str> {
     let allergens: HashSet<&&str> = recipes
         .iter()
         .map(|(a, _)| a)
-        .flat_map(|v| v.into_iter())
+        .flat_map(|v| v.iter())
         .collect();
 
     let mut identified = HashMap::new();
@@ -85,7 +87,7 @@ fn get_ingredients_with_allergens<'a>(recipes: &RECIPES<'a>) -> HashMap<&'a str,
 }
 
 /// Parse the recipe and return the allergens and ingredients in a tuple.
-fn parse_recipe<'a>(data: &'a str) -> (ALLERGENS, INGREDIENTS) {
+fn parse_recipe(data: &str) -> (ALLERGENS, INGREDIENTS) {
     lazy_static::lazy_static! {
         static ref REGEX: regex::Regex = regex::Regex::new(r"^(.*) \(contains (.*)\)$").unwrap();
     }

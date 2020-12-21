@@ -12,8 +12,8 @@ pub fn task_1_2(data: &[usize], end: usize) -> usize {
 
     // Insert all the starting numbers into the memory, except for the last one
     // which is stored in `previous`.
-    for i in 0..data.len() - 1 {
-        memory.insert(data[i], i + 1);
+    for (i, &item) in data.iter().enumerate().take(data.len() - 1) {
+        memory.insert(item, i + 1);
     }
 
     (data.len()..end)

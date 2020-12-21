@@ -51,7 +51,7 @@ pub fn task_2(data: &[String]) -> usize {
 }
 
 /// Parse an input line either to a mask or a memory access.
-fn parse_input<'a>(line: &'a str) -> Input<'a> {
+fn parse_input(line: &str) -> Input {
     lazy_static::lazy_static! {
         static ref RE_MASK: regex::Regex = regex::Regex::new(r"mask = (.*)$").unwrap();
         static ref RE_MEM: regex::Regex = regex::Regex::new(r"mem\[(\d*)\] = (\d*)$").unwrap();
@@ -68,6 +68,7 @@ fn parse_input<'a>(line: &'a str) -> Input<'a> {
 }
 
 /// Get all the addresses that can be obtained from a mask and the initially passes address.
+#[allow(clippy::needless_collect)]
 fn get_addresses(mask: &str, address: usize) -> Vec<usize> {
     // Collect the indices of the floating point bits
     let floating_bits = mask
@@ -88,7 +89,7 @@ fn get_addresses(mask: &str, address: usize) -> Vec<usize> {
 
     // Loop over all length of combinations of floating indices
     (0..=floating_bits.len())
-        // For all the combintations of that length
+        // For all the combinations of that length
         .flat_map(|number| {
             // Create vector with entries corresponding to indices in the combination set to 1
             floating_bits

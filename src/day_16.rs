@@ -60,10 +60,11 @@ pub fn task_2(data: &[String]) -> usize {
         .map(|f| {
             let mut matches = vec![];
             for i in 0..valid_nearby[0].len() {
-                if valid_nearby.iter().all(|v| {
+                let condition = valid_nearby.iter().all(|v| {
                     v[i] >= f.range_1.0 && v[i] <= f.range_1.1
                         || v[i] >= f.range_2.0 && v[i] <= f.range_2.1
-                }) {
+                });
+                if condition {
                     matches.push(i);
                 }
             }
@@ -133,7 +134,7 @@ fn collect_fields(data: &[String]) -> Vec<Field> {
 
 /// Collect the information on your ticket using the input data.
 fn collect_your_ticket(data: &[String]) -> Vec<usize> {
-    let position = data.iter().position(|l| l == &"your ticket:").unwrap();
+    let position = data.iter().position(|l| l == "your ticket:").unwrap();
     data[position + 1]
         .split(',')
         .map(|v| v.parse::<usize>().unwrap())
@@ -142,7 +143,7 @@ fn collect_your_ticket(data: &[String]) -> Vec<usize> {
 
 /// Collect the numbers stored in the nearby tickets.
 fn collect_nearby_tickets(data: &[String]) -> Vec<Vec<usize>> {
-    let position = data.iter().position(|l| l == &"nearby tickets:").unwrap();
+    let position = data.iter().position(|l| l == "nearby tickets:").unwrap();
     data.iter()
         .skip(position + 1)
         .map(|l| l.split(',').map(|c| c.parse::<usize>().unwrap()).collect())
