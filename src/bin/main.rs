@@ -293,9 +293,9 @@ fn main() {
         println!("\nAOC 2020, day 22, task 1: {}", day_22_task_1);
         assert_eq!(day_22_task_1, 31809);
 
-    // let day_22_task_2 = aoc2020::day_22::task_2(&data_day_22);
-    // println!("AOC 2020, day 22, task 2: {}", day_22_task_2);
-    // assert_eq!(day_22_task_2, );
+        let day_22_task_2 = aoc2020::day_22::task_2(&data_day_22);
+        println!("AOC 2020, day 22, task 2: {}", day_22_task_2);
+        assert_eq!(day_22_task_2, 32835);
     } else {
         eprintln!("AOC 2020, day 22: Unable to read data for day 22. Skipping.");
     }

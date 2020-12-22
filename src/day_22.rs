@@ -3,35 +3,29 @@
 //!
 //! The problem formulation for these challenges can
 //! be found [here](https://adventofcode.com/2020/day/22).
-use std::collections::VecDeque;
+use std::collections::{HashSet, VecDeque};
 
-/// Compute the sum of the scores of the cards in the winning player's
-/// deck. The score of a card is its value multiplied by its position
-/// (where last position has score 1, second but last has score 2...).
+type Deck = VecDeque<usize>;
+
+/// Normal version of `Crab Combat` with the given decks.
 pub fn task_1(data: &str) -> usize {
-    let (mut deck_1, mut deck_2) = get_decks(data);
-    let winner = loop {
-        let card_1 = deck_1.pop_front().unwrap();
-        let card_2 = deck_2.pop_front().unwrap();
+    let (deck_1, deck_2) = get_decks(data);
 
-        if card_1 > card_2 {
-            deck_1.push_back(card_1);
-            deck_1.push_back(card_2);
-        } else {
-            deck_2.push_back(card_2);
-            deck_2.push_back(card_1);
-        }
+    crab_combat(deck_1, deck_2, false)
+        .deck()
+        .iter()
+        .rev()
+        .enumerate()
+        .map(|(factor, card)| (factor + 1) * card)
+        .sum()
+}
 
-        if deck_1.is_empty() {
-            break deck_2;
-        }
-        if deck_2.is_empty() {
-            break deck_1;
-        }
-    };
-
-    winner
-        .into_iter()
+/// Recursive version of `Crab Combat` with the given decks.
+pub fn task_2(data: &str) -> usize {
+    let (deck_1, deck_2) = get_decks(data);
+    crab_combat(deck_1, deck_2, true)
+        .deck()
+        .iter()
         .rev()
         .enumerate()
         .map(|(factor, card)| (factor + 1) * card)
@@ -39,7 +33,7 @@ pub fn task_1(data: &str) -> usize {
 }
 
 /// Get the player's deck from the input string.
-fn get_decks(data: &str) -> (VecDeque<usize>, VecDeque<usize>) {
+fn get_decks(data: &str) -> (Deck, Deck) {
     let mut split = data.split("\n\n");
     (
         split
@@ -57,6 +51,71 @@ fn get_decks(data: &str) -> (VecDeque<usize>, VecDeque<usize>) {
             .map(|s| s.parse::<usize>().unwrap())
             .collect(),
     )
+}
+
+/// Track who the winner and its corresponding deck is.
+#[derive(Debug, PartialEq)]
+enum Winner {
+    P1(Deck),
+    P2(Deck),
+}
+
+impl Winner {
+    /// Access the winner' s deck.
+    fn deck(&self) -> &Deck {
+        match self {
+            Self::P1(val) => &val,
+            Self::P2(val) => &val,
+        }
+    }
+}
+
+/// Implementation of `Crab Combat` The flag `recursive` indicates whether or not to use the
+/// recursive version of the game.
+fn crab_combat(mut deck_1: Deck, mut deck_2: Deck, recursive: bool) -> Winner {
+    let (mut memory_1, mut memory_2) = (HashSet::new(), HashSet::new());
+
+    loop {
+        if memory_1.contains(&deck_1) || memory_2.contains(&deck_2) {
+            return Winner::P1(deck_1);
+        }
+
+        memory_1.insert(deck_1.clone());
+        memory_2.insert(deck_2.clone());
+
+        let card_1 = deck_1.pop_front().unwrap();
+        let card_2 = deck_2.pop_front().unwrap();
+
+        if deck_1.len() < card_1 || deck_2.len() < card_2 || !recursive {
+            if card_1 > card_2 {
+                deck_1.push_back(card_1);
+                deck_1.push_back(card_2);
+            } else {
+                deck_2.push_back(card_2);
+                deck_2.push_back(card_1);
+            }
+        } else {
+            let new_deck_1: Deck = deck_1.iter().take(card_1).cloned().collect();
+            let new_deck_2: Deck = deck_2.iter().take(card_2).cloned().collect();
+            match crab_combat(new_deck_1.clone(), new_deck_2.clone(), recursive) {
+                Winner::P1(_) => {
+                    deck_1.push_back(card_1);
+                    deck_1.push_back(card_2);
+                }
+                Winner::P2(_) => {
+                    deck_2.push_back(card_2);
+                    deck_2.push_back(card_1);
+                }
+            }
+        }
+
+        if deck_1.is_empty() {
+            break Winner::P2(deck_2);
+        }
+        if deck_2.is_empty() {
+            break Winner::P1(deck_1);
+        }
+    }
 }
 
 #[cfg(test)]
@@ -90,5 +149,11 @@ mod tests {
     fn test_day_22_task_1() {
         let input = "Player 1:\n9\n2\n6\n3\n1\n\nPlayer 2:\n5\n8\n4\n7\n10";
         assert_eq!(task_1(input), 306);
+    }
+
+    #[test]
+    fn test_day_22_task_2() {
+        let input = "Player 1:\n9\n2\n6\n3\n1\n\nPlayer 2:\n5\n8\n4\n7\n10";
+        assert_eq!(task_2(input), 291);
     }
 }
