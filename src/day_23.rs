@@ -26,7 +26,7 @@ pub fn task_2(input: &[usize], moves: usize) -> usize {
     let mut cups: VecDeque<usize> = input.iter().copied().chain(10..=1000000).collect();
     play_crab_cups(&mut cups, moves, 1, 1_000_000);
     let pos = cups.iter().position(|&x| x == 1).unwrap() + 1;
-    cups[pos-1]*cups[pos+1]
+    cups[pos + 1] * cups[pos + 2]
 }
 
 /// Implementation of the `crab cup` game for a given set of `cups`, a given number of `moves`
@@ -34,30 +34,73 @@ pub fn task_2(input: &[usize], moves: usize) -> usize {
 fn play_crab_cups(cups: &mut VecDeque<usize>, moves: usize, min: usize, max: usize) {
     let mut current_pos = 0;
     for mv in 1..=moves {
+        // println!("[{}]: {:?}", mv, cups);
         if mv % 1000 == 0 {
-            println!("Round: {}", mv);
+            println!("{}", mv);
         }
+        // Collect the next three elements
         let current = cups[current_pos];
-        let mut three_next = Vec::with_capacity(3);
-        let mut insert = current_pos + 1;
-        for _ in 0..3 {
-            if  insert == cups.len() {insert = 0};
-            three_next.push(cups.remove(insert).unwrap());
-        }
-        
+
+        // Determine the destination position
         let mut destination = if current == min { max } else { current - 1 };
-        while three_next.contains(&destination) {
-            destination = if destination == min { max } else { destination - 1 };
+        while cups
+            .iter()
+            .cycle()
+            .skip(current_pos + 1)
+            .cycle()
+            .take(3)
+            .find(|&x| x == &destination)
+            .is_some()
+        {
+            destination = if destination == min {
+                max
+            } else {
+                destination - 1
+            };
         }
         let pos = cups.iter().position(|x| x == &destination).unwrap();
-        three_next.into_iter().rev().for_each(|x| cups.insert(pos + 1, x) );
-        
+
+        // Find the other elements to be replaced
+        let replace = if pos < current_pos {
+            let len_between = current_pos - pos;
+            cups.iter()
+                .cycle()
+                .skip(current_pos + 1)
+                .take(3)
+                .chain(cups.iter().cycle().skip(pos + 1).take(len_between))
+                .copied()
+                .collect::<Vec<_>>()
+        } else {
+            let len_between = pos - current_pos - 3;
+            cups.iter()
+                .cycle()
+                .skip(current_pos + 4)
+                .take(len_between)
+                .chain(cups.iter().cycle().skip(current_pos + 1).take(3))
+                .copied()
+                .collect::<Vec<_>>()
+        };
+
+        // Perform the replacements
+        let mut index = std::cmp::min(current_pos, pos);
+        for i in 0..replace.len() {
+            index += 1;
+            if index == cups.len() {
+                index = 0
+            }
+            let tmp = replace[i];
+            cups[index] = tmp;
+        }
+
+        // TODO: Compute the current position explicitly to avoid finding it
+        // which might be costly
         current_pos = cups.iter().position(|x| x == &current).unwrap() + 1;
         if current_pos == cups.len() {
             current_pos = 0;
         }
     }
 }
+
 
 #[cfg(test)]
 mod tests {
@@ -68,5 +111,4 @@ mod tests {
         assert_eq!(task_1(&[3, 8, 9, 1, 2, 5, 4, 6, 7], 10), 92658374);
         assert_eq!(task_1(&[3, 8, 9, 1, 2, 5, 4, 6, 7], 100), 67384529);
     }
-
 }
