@@ -305,7 +305,7 @@ fn main() {
     println!("\nAOC 2020, day 23, task 1: {}", day_23_task_1);
     assert_eq!(day_23_task_1, 49576328);
 
-    // let day_23_task_2 = aoc2020::day_23::task_2(&data_day_23);
-    // println!("AOC 2020, day 23, task 2: {}", day_23_task_2);
+    let day_23_task_2 = aoc2020::day_23::task_2(&[5, 2, 3, 7, 6, 4, 8, 1, 9], 10_000_000);
+    println!("AOC 2020, day 23, task 2: {}", day_23_task_2);
     // assert_eq!(day_23_task_2, );
 }
