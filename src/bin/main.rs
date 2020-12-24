@@ -284,7 +284,7 @@ fn main() {
             "spcqmzfg,rpf,dzqlq,pflk,bltrbvz,xbdh,spql,bltzkxx"
         );
     } else {
-        eprintln!("AOC 2020, day 18: Unable to read data for day 18. Skipping.");
+        eprintln!("AOC 2020, day 21: Unable to read data for day 21. Skipping.");
     }
 
     // Day 22
@@ -308,4 +308,17 @@ fn main() {
     let day_23_task_2 = aoc2020::day_23::task_2(&[5, 2, 3, 7, 6, 4, 8, 1, 9], 10_000_000);
     println!("AOC 2020, day 23, task 2: {}", day_23_task_2);
     assert_eq!(day_23_task_2, 511780369955);
+
+    // Day 24
+    if let Ok(data_day_24) = read_data::<String, _>("data/day24.txt") {
+        let day_24_task_1 = aoc2020::day_24::task_1(&data_day_24);
+        println!("\nAOC 2020, day 24, task 1: {}", day_24_task_1);
+        assert_eq!(day_24_task_1, 479);
+
+    // let day_24_task_2 = aoc2020::day_24::task_2(&data_day_24);
+    // println!("AOC 2020, day 24, task 2: {}", day_24_task_2);
+    // assert_eq!(day_24_task_2,);
+    } else {
+        eprintln!("AOC 2020, day 24: Unable to read data for day 24. Skipping.");
+    }
 }
