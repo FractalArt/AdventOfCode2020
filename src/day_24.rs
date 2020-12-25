@@ -111,8 +111,8 @@ impl Floor {
     fn flip(&mut self) {
         use std::cmp::{max, min};
         let mut set = HashSet::new();
-        for x in self.x_lim.0 - 2..self.x_lim.1 + 3 {
-            for y in self.y_lim.0 - 1..self.y_lim.1 + 2 {
+        for x in self.x_lim.0 - 2..=self.x_lim.1 + 2 {
+            for y in self.y_lim.0 - 1..=self.y_lim.1 + 2 {
                 if y % 2 == 1 && x % 2 == 0 {
                     continue;
                 }
