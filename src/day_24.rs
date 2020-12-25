@@ -55,7 +55,7 @@ enum Dir {
 }
 
 /// Compute the tile coordinates from a set of directions.
-fn identify_tile(directions: &Vec<Dir>) -> (isize, isize) {
+fn identify_tile(directions: &[Dir]) -> (isize, isize) {
     directions.iter().fold((0, 0), |pos, dir| match dir {
         Dir::E => (pos.0 + 2, pos.1),
         Dir::W => (pos.0 - 2, pos.1),
